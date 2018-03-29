@@ -5,7 +5,7 @@ const main = {
 
     msg : document.getElementById('msg'),
 
-    getGeoLoc : function() {
+    getGeoLoc : function() { //handler
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(this.showPosition, this.showError); //1st parameter: function that will deal with object; 2nd: function for error handling
         } else { 
@@ -13,7 +13,7 @@ const main = {
         }
     },
 
-    showError : function(error) {
+    showError : function(error) { //view
         switch(error.code) {
             case error.PERMISSION_DENIED:
                 x.innerHTML = "I can't tell you the wheather if you don't allow geolocation."
@@ -30,7 +30,7 @@ const main = {
         }
     },
 
-    showPosition : function(position) {
+    showPosition : function(position) { //view
         let lat = position.coords.latitude
             ,long = position.coords.longitude;
         this.msg.innerHTML = "Latitude: " + lat + "<br>Longitude: " + long;
@@ -50,12 +50,21 @@ const main = {
         req.open('GET', 'https://fcc-weather-api.glitch.me/api/current?lat=' + lat + '&lon=' + long);
         req.responseType ='json';
         req.onload = () => {
-            weather = req.response;
-            console.log(weather.name);
-            return weather;
+            this.weather = req.response;
         }
-    
         req.send();
+    },
+
+    weather: {}, // variable that will be filled with the weather data response
+
+    showWeather : function() {
+        let imageBox = document.getElementById('msg');
+        let img = document.createElement("img");
+        img.setAttribute("src", "this.weather.weather[0].icon" );
+        imageBox.appendChild(img);
+
+        console.log(this.weather);
+        console.log('The weather in ' + this.weather.name + ' is: ');
     }
 
 }
