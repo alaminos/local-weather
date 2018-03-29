@@ -7,7 +7,7 @@ const main = {
 
     getGeoLoc : function() {
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(this.showPosition, this.showError);
+            navigator.geolocation.getCurrentPosition(this.showPosition, this.showError); //1st parameter: function that will deal with object; 2nd: function for error handling
         } else { 
             this.msg.innerHTML = "Geolocation is not available.";
         }
@@ -28,17 +28,20 @@ const main = {
                 x.innerHTML = "Sorry, an error occurred."
                 break;
         }
-
     },
 
     showPosition : function(position) {
         let lat = position.coords.latitude
             ,long = position.coords.longitude;
         this.msg.innerHTML = "Latitude: " + lat + "<br>Longitude: " + long;
-        this.getWeather(lat,long); //error-->"TypeError: this.getWeather is not a function"
+        main.getWeather(lat,long); 
+        /*using this.getWeather was not working "TypeError: this.getWeather is not a function", 
+        maybe because 'THIS' was within the object sent by the getCurrentPosition.
+        But in that case, why line 37 is not giving any errors? */
     },
 
     /*----------XMLHTTPREQUEST---------------*/
+
     getWeather : function(lat,long) {
 
         let req = new XMLHttpRequest;
@@ -46,16 +49,14 @@ const main = {
         
         req.open('GET', 'https://fcc-weather-api.glitch.me/api/current?lat=' + lat + '&lon=' + long);
         req.responseType ='json';
-        req.onload = function() {
+        req.onload = () => {
             weather = req.response;
+            console.log(weather.name);
             return weather;
-            console.log('success');
-        };
-        
+        }
+    
         req.send();
-
     }
-
 
 }
 
