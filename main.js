@@ -7,7 +7,7 @@ const main = {
 
     getGeoLoc : function() { //handler
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(this.showPosition, this.showError); //1st parameter: function that will deal with object; 2nd: function for error handling
+            navigator.geolocation.getCurrentPosition(this.getWeather, this.showError); //1st parameter: function that will deal with object; 2nd: function for error handling
         } else { 
             this.msg.innerHTML = "Geolocation is not available.";
         }
@@ -31,8 +31,7 @@ const main = {
     },
 
     showPosition : function(position) { //view
-        let lat = position.coords.latitude
-            ,long = position.coords.longitude;
+        
         this.msg.innerHTML = "Latitude: " + lat + "<br>Longitude: " + long;
         main.getWeather(lat,long); 
         /*using this.getWeather was not working "TypeError: this.getWeather is not a function", 
@@ -42,15 +41,16 @@ const main = {
 
     /*----------XMLHTTPREQUEST---------------*/
 
-    getWeather : function(lat,long) {
-
-        let req = new XMLHttpRequest;
-        let weather; //this variable will contain the response data
+    getWeather : function(position) {
+        let lat = position.coords.latitude
+            , long = position.coords.longitude
+            , req = new XMLHttpRequest;
         
         req.open('GET', 'https://fcc-weather-api.glitch.me/api/current?lat=' + lat + '&lon=' + long);
         req.responseType ='json';
         req.onload = () => {
-            this.weather = req.response;
+            main.weather = req.response;
+            main.showWeather();
         }
         req.send();
     },
@@ -58,13 +58,22 @@ const main = {
     weather: {}, // variable that will be filled with the weather data response
 
     showWeather : function() {
-        let imageBox = document.getElementById('msg');
-        let img = document.createElement("img");
-        img.setAttribute("src", "this.weather.weather[0].icon" );
-        imageBox.appendChild(img);
 
         console.log(this.weather);
         console.log('The weather in ' + this.weather.name + ' is: ');
+
+        let imageBox = document.getElementById('msg')
+        ,   img = document.createElement("img")
+        ,   txt = 'The weather in ' + this.weather.name + ': ' + this.weather.weather[0]['main'] + '. ';
+
+        img.setAttribute("src", "this.weather.weather[0].icon" );
+        img.setAttribute("alt", "weather icon" );
+        imageBox.innerHTML = txt;
+        imageBox.appendChild(img);
+
+        
+        console.log('descripción:' + this.weather.weather[0]['main']);
+        console.log(this.weather.weather[0].icon);
     }
 
 }
