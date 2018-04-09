@@ -43,8 +43,8 @@ const main = {
 
     getWeather : function(position) {
         let lat = position.coords.latitude
-            , long = position.coords.longitude
-            , req = new XMLHttpRequest;
+        ,   long = position.coords.longitude
+        ,   req = new XMLHttpRequest;
         
         req.open('GET', 'https://fcc-weather-api.glitch.me/api/current?lat=' + lat + '&lon=' + long);
         req.responseType ='json';
